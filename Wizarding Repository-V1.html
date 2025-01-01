@@ -1,0 +1,1132 @@
+<html>
+<head>
+<base href="https://api.potterdb.com/v1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wizarding Repository</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Text:wght@300;400;600&family=Poppins:wght@300;400;600&display=swap');
+
+        /* CSS Variables for Apple-like Theme */
+        :root {
+            --background-color: #ffffff;
+            --card-background: #f9f9f9;
+            --primary-color: #0a84ff;
+            --secondary-color: #5e5ce6;
+            --text-color: #1c1c1e;
+            --navbar-background: rgba(255, 255, 255, 0.8);
+            --navbar-shadow: rgba(0, 0, 0, 0.1);
+            --modal-background: rgba(255, 255, 255, 0.95);
+            --border-radius: 20px;
+            --transition-speed: 0.3s;
+            --tab-height: 60px;
+            --topbar-height: 60px;
+            --icon-size: 24px;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --blur-effect: blur(15px);
+            --font-color: #1c1c1e;
+        }
+
+        /* Global Styles */
+        body {
+            font-family: 'SF Pro Text', 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--font-color);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Top Bar Styles */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--topbar-height);
+            background-color: var(--navbar-background);
+            box-shadow: 0 2px 8px var(--navbar-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1100;
+            animation: fadeIn 0.5s ease-in-out;
+            backdrop-filter: var(--blur-effect);
+        }
+
+        .topbar-left, .topbar-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-color);
+            transition: color var(--transition-speed);
+        }
+
+        .settings-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: transform var(--transition-speed);
+            margin-right: 15px;
+        }
+
+        .settings-button:hover {
+            transform: scale(1.1);
+        }
+
+        .settings-button svg {
+            width: var(--icon-size);
+            height: var(--icon-size);
+            fill: var(--font-color);
+            transition: fill var(--transition-speed);
+        }
+
+        /* Content Area */
+        #content {
+            flex: 1;
+            padding: 80px 20px 80px 20px; 
+            overflow-y: auto;
+            background-color: var(--background-color);
+            animation: fadeIn 0.5s ease-in-out;
+            transition: all var(--transition-speed);
+            margin-top: var(--topbar-height);
+        }
+
+        /* Hidden Content */
+        .hidden {
+            display: none;
+        }
+
+        /* Home Content Styles */
+        .home-content {
+            animation: fadeIn 0.5s ease-in-out;
+            text-align: center;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            transition: all var(--transition-speed);
+        }
+
+        .home-content h1 {
+            font-family: 'SF Pro Text', sans-serif;
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+
+        .home-content p {
+            font-size: 18px;
+            color: #555555;
+            margin: 10px 0;
+            animation: fadeIn 1s ease-in-out;
+            max-width: 600px;
+        }
+
+        /* Tab Bar Styles */
+        .tabbar {
+            background-color: var(--navbar-background);
+            box-shadow: 0 -2px 12px var(--navbar-shadow);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1000;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+            animation: fadeIn 0.5s ease-in-out;
+            height: var(--tab-height);
+            backdrop-filter: var(--blur-effect);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: var(--font-color);
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: color var(--transition-speed), transform var(--transition-speed);
+            outline: none;
+            animation: bounce 2s infinite;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .tab-button svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            fill: currentColor;
+            transition: fill var(--transition-speed);
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .search-container input {
+            width: 90%;
+            max-width: 500px;
+            padding: 12px 20px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            outline: none;
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+            background-color: #ffffff;
+            color: var(--font-color);
+            box-shadow: 0 1px 5px var(--shadow-color);
+        }
+
+        .search-container input::placeholder {
+            color: #a1a1a1;
+        }
+
+        .search-container input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(10, 132, 255, 0.5);
+        }
+
+        /* Cards Container */
+        #cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Card Styles */
+        .card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            overflow: hidden;
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            animation: fadeIn 0.5s ease-in-out;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+        }
+
+        .card-details {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: background-color var(--transition-speed);
+        }
+
+        .card-details h3 {
+            margin: 0 0 10px 0;
+            font-family: 'SF Pro Text', sans-serif;
+            font-size: 22px;
+            color: var(--primary-color);
+            transition: color var(--transition-speed);
+        }
+
+        .card-details h3:hover {
+            color: var(--secondary-color);
+        }
+
+        .card-details p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555555;
+            transition: color var(--transition-speed);
+            flex: 1;
+        }
+
+        .card-details p:hover {
+            color: var(--primary-color);
+        }
+
+        /* Loader Styles */
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 50px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            background-color: var(--modal-background);
+            margin: 60px auto;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: slideUp 0.5s ease-in-out;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: var(--primary-color);
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color var(--transition-speed);
+        }
+
+        .close:hover {
+            color: var(--secondary-color);
+        }
+
+        /* Settings Modal Styles */
+        .settings-modal-content {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .settings-option {
+            padding: 15px 20px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            transition: background-color var(--transition-speed);
+            display: flex;
+            align-items: center;
+            border-radius: var(--border-radius);
+            margin: 5px 10px;
+            background-color: #f9f9f9;
+        }
+
+        .settings-option:hover {
+            background-color: #e0e0e0;
+        }
+
+        .settings-option svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--font-color);
+            margin-right: 15px;
+            vertical-align: middle;
+        }
+
+        .settings-option span {
+            vertical-align: middle;
+            font-size: 16px;
+            color: var(--font-color);
+        }
+
+        /* Accordion Styles */
+        .accordion {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .accordion-item {
+            background-color: var(--card-background);
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: max-height var(--transition-speed);
+        }
+
+        .accordion-header {
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--primary-color);
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .accordion-header:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            padding: 0 15px;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            transition: max-height var(--transition-speed);
+        }
+
+        .accordion-content p {
+            margin: 15px 0;
+        }
+
+        .accordion-header svg {
+            transition: transform var(--transition-speed);
+        }
+
+        .accordion-header.active svg {
+            transform: rotate(180deg);
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            max-width: 600px;
+            margin: 40px 0;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--primary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+
+        .timeline-item {
+            padding: 20px 30px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: var(--primary-color);
+            border: 4px solid #ffffff;
+            top: 20px;
+            border-radius: 50%;
+            z-index: 1;
+            transition: transform var(--transition-speed);
+        }
+
+        .timeline-item.left {
+            left: 0;
+        }
+
+        .timeline-item.right {
+            left: 50%;
+        }
+
+        .timeline-item.left::after {
+            left: -17px;
+        }
+
+        .timeline-item.right::after {
+            left: -17px;
+        }
+
+        .timeline-item .content {
+            padding: 20px 30px;
+            background-color: var(--card-background);
+            position: relative;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+        }
+
+        .timeline-item .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item.left .content {
+            margin-left: 0;
+        }
+
+        .timeline-item.right .content {
+            margin-left: 0;
+        }
+
+        @media screen and (max-width: 600px) {
+            .timeline::after {
+                left: 31px;
+            }
+
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-item.right {
+                left: 0%;
+            }
+
+            .timeline-item.left::after, .timeline-item.right::after {
+                left: 15px;
+            }
+        }
+
+        /* New Settings Options Styles */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin-left: auto;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: background-color 0.4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: transform 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Additional Button Styles */
+        .settings-save-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            margin-top: 20px;
+            align-self: center;
+        }
+
+        .settings-save-button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            --background-color: #1c1c1e;
+            --card-background: #2c2c2e;
+            --primary-color: #0a84ff;
+            --secondary-color: #5e5ce6;
+            --text-color: #ffffff;
+            --navbar-background: rgba(28, 28, 30, 0.8);
+            --navbar-shadow: rgba(255, 255, 255, 0.1);
+            --modal-background: rgba(28, 28, 30, 0.95);
+            --font-color: #ffffff;
+        }
+
+        /* Responsive Styles */
+        @media only screen and (max-width: 600px) {
+            .card {
+                width: 90%;
+            }
+
+            .search-container input {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar with Settings Icon and Title -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <button class="settings-button" id="settings-button" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M19.4 12.94c.04-.32.06-.65.06-.94s-.02-.62-.06-.94l2.03-1.58a.5.5 0 00.11-.63l-1.91-3.3a.5.5 0 00-.61-.22l-2.39.96a7.035 7.035 0 00-1.62-.94l-.36-2.54A.5.5 0 0014.5 3h-5a.5.5 0 00-.49.42l-.36 2.54a7.035 7.035 0 00-1.62.94l-2.39-.96a.5.5 0 00-.61.22l-1.91 3.3a.5.5 0 00.11.63l2.03 1.58c-.04.32-.06.65-.06.94s.02.62.06.94l-2.03 1.58a.5.5 0 00-.11.63l1.91 3.3c.14.24.43.34.61.22l2.39-.96c.5.38 1.05.7 1.62.94l.36 2.54c.04.25.25.42.49.42h5c.24 0 .45-.17.49-.42l.36-2.54c.57-.24 1.12-.56 1.62-.94l2.39.96a.5.5 0 00.61-.22l1.91-3.3a.5.5 0 00-.11-.63l-2.03-1.58zM12 15a3 3 0 110-6 3 3 0 010 6z"/>
+                </svg>
+            </button>
+            <div class="topbar-title">Home</div>
+        </div>
+        <div class="topbar-right">
+            <!-- You can add more icons or elements here if needed -->
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search...">
+        </div>
+        <div id="cards-container">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+    <!-- Modal Structure for Card Details -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-body">
+                <!-- Dynamic Content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Structure for Settings -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-settings close">&times;</span>
+            <div class="settings-modal-content">
+                <div class="settings-option" id="about-option">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-6h2v6zm0-8h-2V7h2v4z"/>
+                    </svg>
+                    <span>About Me</span>
+                </div>
+                <div class="settings-option" id="theme-option">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 4.5c-4.135 0-7.5 3.365-7.5 7.5 0 3.575 2.246 6.58 5.376 7.79a.75.75 0 00.148 1.493l.102.012h.573l.102-.012a.75.75 0 00.148-1.493C16.254 18.58 18.5 15.575 18.5 12c0-4.135-3.365-7.5-7.5-7.5zm0 13a5.502 5.502 0 01-5.496-5.5 5.502 5.502 0 0111.0 0 5.502 5.502 0 01-5.504 5.5z"/>
+                    </svg>
+                    <span>Dark Mode</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option" id="notifications-option">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 22c1.1 0 2-.89 2-1.99H10c0 1.1.89 2 2 2zm6-6V9c0-3.07-1.63-5.64-4.5-6.32V2.5a1.5 1.5 0 00-3 0v.18C7.63 3.36 6 5.92 6 9v7l-2 2v1h16v-1l-2-2z"/>
+                    </svg>
+                    <span>Notifications</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifications-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button class="settings-save-button" id="save-settings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Structure for About Content -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-about close">&times;</span>
+            <div class="about-content">
+                <h2>About Me</h2>
+                <p>Hi! I'm <strong>Kabilan</strong>, a passionate developer and Harry Potter enthusiast.</p>
+                <p>Connect with me on <a href="https://www.instagram.com/_fan_boi_lm10_/" target="_blank">Instagram</a> or visit my <a href="https://personalportfolio.tiiny.site" target="_blank">Personal Portfolio</a>.</p>
+                <p>With a strong background in web development, I have honed my skills in creating dynamic and responsive web applications. My journey began with a love for coding and a desire to bring ideas to life through technology.</p>
+                <p>Beyond coding, I enjoy engaging with the Harry Potter community and contributing to fan projects. Whether it's developing a comprehensive wiki or building interactive features for enthusiasts, I strive to merge my passions seamlessly.</p>
+                <p>When I'm not immersed in code or magical worlds, I dedicate time to learning new technologies and enhancing my expertise. Continuous growth and adaptability are key to staying ahead in the ever-evolving tech landscape.</p>
+                <p>I'm continually exploring new technologies and methodologies to enhance my development skills. My commitment to learning ensures that I stay updated with the latest trends and best practices in the industry.</p>
+                <p>Feel free to reach out to me through my Instagram or explore my personal portfolio to learn more about my work and projects.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tabbar">
+        <button id="home-tab" class="tab-button" title="Home">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            Home
+        </button>
+        <button id="books-tab" class="tab-button" title="Books">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M19 2H9c-1.1 0-2 .9-2 2v16h2V4h10V2zM5 22h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2z"/>
+            </svg>
+            Books
+        </button>
+        <button id="characters-tab" class="tab-button" title="Characters">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/>
+            </svg>
+            Characters
+        </button>
+        <button id="movies-tab" class="tab-button" title="Movies">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M21 6h-3.17l-1.84-1.84A2 2 0 0015.17 4H8.83a2 2 0 00-1.66.84L5.17 6H2c-1.1 0-2 .9-2 2v12a2 2 0 002 2h19a2 2 0 002-2V8a2 2 0 00-2-2zM8.83 5h6.34l1.59 1.59H7.24L8.83 5zM20 18H4V8h16v10z"/>
+            </svg>
+            Movies
+        </button>
+        <button id="potions-tab" class="tab-button" title="Potions">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 3.25 2.2 6.01 5.05 7.17.37.16.64.52.64.93v2.08c0 .53.42.96.95.96.28 0 .53-.11.71-.29.19-.19.29-.44.29-.71v-2.08s3.8-1.92 4.05-6c0-3.87-3.13-7-7-7z"/>
+            </svg>
+            Potions
+        </button>
+        <button id="spells-tab" class="tab-button" title="Spells">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2L3 21h18L12 2zM12 15l-3.09 5h6.18L12 15z"/>
+            </svg>
+            Spells
+        </button>
+    </div>
+
+    <script>
+        // Constants for Potter DB API endpoints
+        const BASE_API_URL = "https://api.potterdb.com/v1";
+        const BOOKS_API = `${BASE_API_URL}/books`;
+        const CHARACTERS_API = `${BASE_API_URL}/characters`;
+        const MOVIES_API = `${BASE_API_URL}/movies`;
+        const POTIONS_API = `${BASE_API_URL}/potions`;
+        const SPELLS_API = `${BASE_API_URL}/spells`;
+
+        // Content containers
+        const cardsContainer = document.getElementById("cards-container");
+        const searchInput = document.getElementById("search-input");
+        const modal = document.getElementById("modal");
+        const modalBody = document.getElementById("modal-body");
+        const closeModal = document.querySelector(".close");
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const settingsButton = document.getElementById("settings-button");
+        const settingsModal = document.getElementById("settings-modal");
+        const closeSettingsModal = document.querySelector(".close-settings");
+        const aboutOption = document.getElementById("about-option");
+        const aboutModal = document.getElementById("about-modal");
+        const closeAboutModal = document.querySelector(".close-about");
+        const topbarTitle = document.querySelector(".topbar-title");
+        const themeToggle = document.getElementById("theme-toggle");
+        const notificationsToggle = document.getElementById("notifications-toggle");
+        const saveSettingsButton = document.getElementById("save-settings");
+
+        let currentData = [];
+        let currentCategory = "home";
+
+        // Helper to render cards
+        function renderCards(items) {
+            cardsContainer.innerHTML = "";
+            if (items.length === 0) {
+                cardsContainer.innerHTML = "<p style='color: var(--primary-color); text-align: center;'>No results found.</p>";
+                return;
+            }
+            items.forEach(item => {
+                let imageUrl;
+                switch(currentCategory) {
+                    case 'books':
+                        if (item.attributes.cover) {
+                            imageUrl = item.attributes.cover.startsWith('http://') || item.attributes.cover.startsWith('https://') ? item.attributes.cover : `${BASE_API_URL}${item.attributes.cover}`;
+                        }
+                        break;
+                    case 'movies':
+                        if (item.attributes.poster) {
+                            imageUrl = item.attributes.poster.startsWith('http://') || item.attributes.poster.startsWith('https://') ? item.attributes.poster : `${BASE_API_URL}${item.attributes.poster}`;
+                        }
+                        break;
+                    case 'characters':
+                        if (item.attributes.image) {
+                            imageUrl = item.attributes.image.startsWith('http://') || item.attributes.image.startsWith('https://') ? item.attributes.image : `${BASE_API_URL}${item.attributes.image}`;
+                        }
+                        break;
+                    case 'potions':
+                        if (item.attributes.image) {
+                            imageUrl = item.attributes.image.startsWith('http://') || item.attributes.image.startsWith('https://') ? item.attributes.image : `${BASE_API_URL}${item.attributes.image}`;
+                        }
+                        break;
+                    case 'spells':
+                        if (item.attributes.image) {
+                            imageUrl = item.attributes.image.startsWith('http://') || item.attributes.image.startsWith('https://') ? item.attributes.image : `${BASE_API_URL}${item.attributes.image}`;
+                        }
+                        break;
+                    default:
+                        imageUrl = undefined;
+                }
+                const imgTag = imageUrl ? `<img src="${imageUrl}" alt="${item.attributes.name || item.attributes.title}" class="card-image">` : '';
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    ${imgTag}
+                    <div class="card-details">
+                        <h3>${item.attributes.name || item.attributes.title}</h3>
+                        ${generateSummary(item)}
+                    </div>
+                `;
+                card.addEventListener('click', () => openModal(item));
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        // Generate summary based on category
+        function generateSummary(item) {
+            switch(currentCategory) {
+                case 'books':
+                    return `
+                        <p><strong>Author:</strong> ${item.attributes.author || "N/A"}</p>
+                        <p><strong>Release Date:</strong> ${item.attributes.release_date || "N/A"}</p>
+                    `;
+                case 'characters':
+                    return `
+                        <p><strong>House:</strong> ${item.attributes.house || "N/A"}</p>
+                        <p><strong>Patronus:</strong> ${item.attributes.patronus || "N/A"}</p>
+                    `;
+                case 'movies':
+                    return `
+                        <p><strong>Release Date:</strong> ${item.attributes.release_date || "N/A"}</p>
+                        <p><strong>Director:</strong> ${item.attributes.directors?.join(", ") || "N/A"}</p>
+                    `;
+                case 'potions':
+                    return `
+                        <p><strong>Effect:</strong> ${item.attributes.effect || "N/A"}</p>
+                        <p><strong>Inventor:</strong> ${item.attributes.inventors || "N/A"}</p>
+                    `;
+                case 'spells':
+                    return `
+                        <p><strong>Category:</strong> ${item.attributes.category || "N/A"}</p>
+                        <p><strong>Effect:</strong> ${item.attributes.effect || "N/A"}</p>
+                    `;
+                default:
+                    return `<p>No summary available.</p>`;
+            }
+        }
+
+        // Helper to fetch data
+        async function fetchData(apiUrl) {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch data.");
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error(error);
+                cardsContainer.innerHTML = "<h2 style='color: var(--primary-color); text-align: center;'>Failed to load data. Please try again later.</h2>";
+                return null;
+            }
+        }
+
+        // Tab switcher function
+        async function switchTab(tab) {
+            tabButtons.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            currentCategory = tab.id.replace('-tab', '');
+            searchInput.value = '';
+
+            if (currentCategory === 'home') {
+                topbarTitle.textContent = "Home";
+                cardsContainer.innerHTML = `
+                    <div class="home-content">
+                        <h1>Welcome to the Harry Potter Wiki</h1>
+                        <p>Explore the magical world of Harry Potter through our comprehensive database covering books, characters, movies, potions, and spells.</p>
+                    </div>
+                `;
+                currentData = [];
+                return;
+            }
+
+            // Show cards and search
+            cardsContainer.classList.remove("hidden");
+            searchInput.parentElement.classList.remove("hidden");
+            cardsContainer.innerHTML = "<div class='loader'></div>";
+
+            let data;
+            switch (currentCategory) {
+                case 'books':
+                    data = await fetchData(BOOKS_API);
+                    topbarTitle.textContent = "Books";
+                    break;
+                case 'characters':
+                    data = await fetchData(CHARACTERS_API);
+                    topbarTitle.textContent = "Characters";
+                    break;
+                case 'movies':
+                    data = await fetchData(MOVIES_API);
+                    topbarTitle.textContent = "Movies";
+                    break;
+                case 'potions':
+                    data = await fetchData(POTIONS_API);
+                    topbarTitle.textContent = "Potions";
+                    break;
+                case 'spells':
+                    data = await fetchData(SPELLS_API);
+                    topbarTitle.textContent = "Spells";
+                    break;
+                default:
+                    data = null;
+            }
+
+            if (data && data.data) {
+                currentData = data.data;
+                renderCards(currentData);
+            }
+        }
+
+        // Add event listeners to tab buttons
+        tabButtons.forEach(button => {
+            button.addEventListener("click", () => switchTab(button));
+        });
+
+        // Search functionality
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase();
+            const filteredData = currentData.filter(item => {
+                const name = item.attributes.name || item.attributes.title;
+                return name.toLowerCase().includes(query);
+            });
+            renderCards(filteredData);
+        });
+
+        // Modal functions
+        function openModal(item) {
+            modal.style.display = "block";
+            modalBody.innerHTML = generateModalContent(item);
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModalFunc() {
+            modal.style.display = "none";
+            modalBody.innerHTML = "";
+            document.body.style.overflow = "auto";
+        }
+
+        function openSettingsModal() {
+            settingsModal.style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeSettingsModalFunc() {
+            settingsModal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        function openAboutModal() {
+            aboutModal.style.display = "block";
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeAboutModalFunc() {
+            aboutModal.style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+
+        closeModal.addEventListener('click', closeModalFunc);
+        closeSettingsModal.addEventListener('click', closeSettingsModalFunc);
+        closeAboutModal.addEventListener('click', closeAboutModalFunc);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModalFunc();
+            }
+            if (event.target === settingsModal) {
+                closeSettingsModalFunc();
+            }
+            if (event.target === aboutModal) {
+                closeAboutModalFunc();
+            }
+        });
+
+        // Generate modal content based on category
+        function generateModalContent(item) {
+            let details = '';
+            switch(currentCategory) {
+                case 'books':
+                    details = `
+                        <p><strong>Author:</strong> ${item.attributes.author || "N/A"}</p>
+                        <p><strong>Dedication:</strong> ${item.attributes.dedication || "N/A"}</p>
+                        <p><strong>Pages:</strong> ${item.attributes.pages || "N/A"}</p>
+                        <p><strong>Release Date:</strong> ${item.attributes.release_date || "N/A"}</p>
+                        <p><strong>Summary:</strong> ${item.attributes.summary || "N/A"}</p>
+                        <h4>Chapters:</h4>
+                        <ul>
+                            ${(item.attributes.chapters || []).map(ch => `<li><strong>${ch.title}:</strong> ${ch.summary || "N/A"}</li>`).join("")}
+                        </ul>
+                    `;
+                    break;
+                case 'characters':
+                    details = `
+                        <p><strong>Alias Names:</strong> ${item.attributes.alias_names?.join(", ") || "N/A"}</p>
+                        <p><strong>Animagus:</strong> ${item.attributes.animagus || "N/A"}</p>
+                        <p><strong>Boggart:</strong> ${item.attributes.boggart || "N/A"}</p>
+                        <p><strong>Born:</strong> ${item.attributes.born || "N/A"}</p>
+                        <p><strong>Died:</strong> ${item.attributes.died || "N/A"}</p>
+                        <p><strong>Eye Color:</strong> ${item.attributes.eye_color || "N/A"}</p>
+                        <p><strong>Hair Color:</strong> ${item.attributes.hair_color || "N/A"}</p>
+                        <p><strong>House:</strong> ${item.attributes.house || "N/A"}</p>
+                        <p><strong>Patronus:</strong> ${item.attributes.patronus || "N/A"}</p>
+                        <p><strong>Romances:</strong> ${item.attributes.romances?.join(", ") || "N/A"}</p>
+                    `;
+                    break;
+                case 'movies':
+                    details = `
+                        <p><strong>Budget:</strong> ${item.attributes.budget || "N/A"}</p>
+                        <p><strong>Box Office:</strong> ${item.attributes.box_office || "N/A"}</p>
+                        <p><strong>Directors:</strong> ${item.attributes.directors?.join(", ") || "N/A"}</p>
+                        <p><strong>Music Composers:</strong> ${item.attributes.music_composers?.join(", ") || "N/A"}</p>
+                        <p><strong>Release Date:</strong> ${item.attributes.release_date || "N/A"}</p>
+                        <p><strong>Summary:</strong> ${item.attributes.summary || "N/A"}</p>
+                    `;
+                    break;
+                case 'potions':
+                    details = `
+                        <p><strong>Characteristics:</strong> ${item.attributes.characteristics || "N/A"}</p>
+                        <p><strong>Effect:</strong> ${item.attributes.effect || "N/A"}</p>
+                        <p><strong>Inventors:</strong> ${item.attributes.inventors || "N/A"}</p>
+                    `;
+                    break;
+                case 'spells':
+                    details = `
+                        <p><strong>Category:</strong> ${item.attributes.category || "N/A"}</p>
+                        <p><strong>Effect:</strong> ${item.attributes.effect || "N/A"}</p>
+                        <p><strong>Creator:</strong> ${item.attributes.creator || "N/A"}</p>
+                    `;
+                    break;
+                default:
+                    details = `<p>No details available.</p>`;
+            }
+            return `
+                <h2>${item.attributes.name || item.attributes.title}</h2>
+                <div>${details}</div>
+            `;
+        }
+
+        // Event listeners for settings
+        settingsButton.addEventListener('click', openSettingsModal);
+        aboutOption.addEventListener('click', () => {
+            openAboutModal();
+            closeSettingsModalFunc();
+        });
+
+        // Theme Toggle Functionality
+        themeToggle.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode', themeToggle.checked);
+        });
+
+        // Notifications Toggle Functionality (Dummy)
+        notificationsToggle.addEventListener('change', () => {
+            if (notificationsToggle.checked) {
+                alert("Notifications Enabled!");
+            } else {
+                alert("Notifications Disabled!");
+            }
+        });
+
+        // Save Settings (Optional: You can implement persistence)
+        saveSettingsButton.addEventListener('click', () => {
+            closeSettingsModalFunc();
+            // Implement saving settings if needed
+        });
+
+        // Accordion functionality (if any)
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.classList.toggle('active');
+                const content = header.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        });
+
+        // Initial load
+        document.addEventListener("DOMContentLoaded", () => {
+            switchTab(document.getElementById("home-tab"));
+        });
+    </script>
+</body>
+</html>
